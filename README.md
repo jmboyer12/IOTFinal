@@ -32,5 +32,5 @@
 * git add <filesNotStaged>
 
 
-##Pulling from the repository (do it before pushing)
+## Pulling from the repository (do it before pushing)
 * run "git pull origin master"
