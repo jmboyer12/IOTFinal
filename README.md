@@ -1,5 +1,5 @@
 # IOTFinal
-## Installation
+## Installation (On the PI)
 * cd into the desired folder
 * run "git clone https://github.com/jmboyer12/IOTFinal.git"
 * this will create the folder IOTFinal
