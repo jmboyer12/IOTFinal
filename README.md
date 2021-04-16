@@ -16,3 +16,15 @@
 * sudo apt-get update
 * sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
 * npm install (From IOTFinal folder)
+
+## Pushing to Repository (in terminal in IOTFinal folder)
+### The first time 
+* run "git config --global user.email "Your github email"
+* run "git config --gloabl user.name "Your github username"
+### The rest
+* run "git commit -m"Your commit message"
+* run "git push origin master"
+* if first time will ask you to sign in, do it
+
+##Pulling from the repository (do it before pushing)
+* run "git pull origin master"
