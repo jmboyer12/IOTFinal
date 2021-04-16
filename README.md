@@ -7,6 +7,7 @@
 * cd into that folder and run "npm install" in the command line
 
 ## Test Run
+* install npm first
 * in the IOTFinal folder run "npm start" in the command line
 * on your phone go to "https://iot-project-server.glitch.me/"
 * click on any of the buttons on the website and the name of the button should log on the pi console
