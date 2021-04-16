@@ -25,6 +25,8 @@
 * run "git commit -m"Your commit message"
 * run "git push origin master"
 * if first time will ask you to sign in, do it
+### If you get an message saying "changes not staged"
+* git add <filesNotStaged>
 
 ##Pulling from the repository (do it before pushing)
 * run "git pull origin master"
