@@ -1,6 +1,5 @@
 const { createBluetooth } = require( 'node-ble' );
 var io = require('socket.io-client')
-var InfluxDB = require('InfluxDBClient');
 
 
 // TODO: Replace this with your Arduino's Bluetooth address
@@ -82,10 +81,11 @@ main()
 const messageFromArduino = (buffer) => {
     console.log(buffer.toString());
 }
+/*
 // FOR RICK
 // TO DO: Need InfluxDB and have the ability to send stuff to the InfluxDB - See Lab 4
 // Periodically poll Arduino for light intensity (DIMMER PERCENTAGE) and store returned value in InfluxDB
-const Influx = require('../../')
+const Influx = require('InfluxDBClient')
 const express = require('express')
 const http = require('http')
 const os = require('os')
@@ -109,3 +109,14 @@ const influx = new Influx.Influxdb({
         }
     ]
 })
+
+influx.getDatabaseNames()
+.then(names => {
+    if (!names.includes('express_response_db')){
+        return influx.createDatabase('express_response_db');
+    }
+})
+.catch(err => {
+    console.error('Error creating influx database!');
+})
+*/
