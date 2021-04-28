@@ -26,7 +26,7 @@ socket.on('toggle', data => {
         });
     }    
 })
-
+// example of sending data to Dillon via PI
 socket.on('increment', data => {
     if(comms.tx){
         comms.tx.writeValue(Buffer.from(stateManagement + '1')).then(()=>{console.log('increment')}).catch(err =>{
@@ -66,8 +66,20 @@ async function main(){
         comms.tx = await uartService.getCharacteristic( TX_CHARACTERISTIC_UUID.toLowerCase() );
         comms.rx = await uartService.getCharacteristic( RX_CHARACTERISTIC_UUID.toLowerCase() );
         console.log('Got UART');
+        comms.rx.on('valuechanged', buffer =>{
+            messageFromArduino(buffer);
+        })
     }).catch(err => {
         console.log(err);
     })
 }
 main()
+// FOR RICK
+// this function is called everytime Dillon sends a message via UART
+// TO DO: Parsing of some sort - dependent on the data being sent
+const messageFromArduino = (buffer) => {
+    console.log(buffer.toString());
+}
+// FOR RICK
+// TO DO: Need InfluxDB and have the ability to send stuff to the InfluxDB - See Lab 4
+// Periodically poll Arduino for light intensity (DIMMER PERCENTAGE) and store returned value in InfluxDB
