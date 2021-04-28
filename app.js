@@ -65,8 +65,15 @@ async function main(){
         comms.tx = await uartService.getCharacteristic( TX_CHARACTERISTIC_UUID.toLowerCase() );
         comms.rx = await uartService.getCharacteristic( RX_CHARACTERISTIC_UUID.toLowerCase() );
         console.log('Got UART');
+        comms.rx.on('valuechanged', buffer =>{
+            messageFromArduino(buffer);
+        })
     }).catch(err => {
         console.log(err);
     })
 }
 main()
+
+const messageFromArduino = (buffer) => {
+    console.log(buffer.toString());
+}
