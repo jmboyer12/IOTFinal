@@ -177,11 +177,6 @@ const messageFromArduino = (buffer) => {
        return influx.createDatabase("express_response_db");
      }
    })
-   .then(() => {
-     http.createServer(app).listen(3000, function () {
-       console.log("Listening on port 3000");
-     });
-   })
    .catch((err) => {
      console.error(`Error creating Influx database!`);
    });

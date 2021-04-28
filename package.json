@@ -11,6 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@teachablemachine/image": "^0.8.4",
+    "@tensorflow/tfjs": "^3.5.0",
+    "express": "^4.17.1",
     "influx": "^5.8.0",
     "node-ble": "^1.5.0",
     "pi-camera": "^1.5.0",
