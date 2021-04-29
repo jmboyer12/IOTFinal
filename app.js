@@ -3,8 +3,6 @@ var io = require('socket.io-client')
 
 // import/reference to the library
 const Influx = require("influx");
-const os = require('os')
-const http = require('http');
 
 // TODO: Replace this with your Arduino's Bluetooth address
 // as found by running the 'scan on' command in bluetoothctl
@@ -13,9 +11,8 @@ const ARDUINO_BLUETOOTH_ADDR = '67:66:24:8B:8E:00';
 const UART_SERVICE_UUID      = '6E400001-B5A3-F393-E0A9-E50E24DCCA9E'; 
 const TX_CHARACTERISTIC_UUID = '6E400002-B5A3-F393-E0A9-E50E24DCCA9E';
 const RX_CHARACTERISTIC_UUID = '6E400003-B5A3-F393-E0A9-E50E24DCCA9E';
-const ESS_SERVICE_UUID = '0000181A-0000-1000-8000-00805F9B34FB';
-const TEMP_CHARACTERISTIC_UUID = '00002A6E-0000-1000-8000-00805F9B34FB';
-const dimming_measurement = 'dimming_intensity';
+const userId = 'user1';
+const databaseName = "light_readings_db"
 
 //comms: each type of code will be superceded by a character identifier
 const stateManagement = 's';
@@ -84,8 +81,9 @@ main()
 
 const messageFromArduino = (buffer) => {
     //console.log(buffer.toString());
-    if(buffer[0] == 's'){
-        // mess with later
+    if(buffer.toString().charAt('0') == 's'){
+        const value = parseInt(buffer.toString().slice(1));
+        socket.emit('stateUpdate', value);
     }
     // check if the buffer contains the dimming_intensity 
     else if (buffer.toString().charAt(0) == 'p'){
@@ -104,8 +102,8 @@ const writeToInflux = (dimming_intensity) => {
     }
     influx.writePoints([
         {
-          measurement: 'user1',
-          tags: { host: os.hostname() },
+          measurement: userId,
+          tags: { host: 'localhost' },
           fields: { dimming_measurement: dimming_intensity },
         }
       ]).then(()=>{
@@ -144,10 +142,10 @@ setInterval(() => {
 
  const influx = new Influx.InfluxDB({
    host: "localhost",
-   database: "light_readings_db",
+   database: databaseName,
    schema: [
      {
-       measurement: "user1",
+       measurement: userId,
        fields: {
          dimming_measurement: Influx.FieldType.FLOAT,
        },
@@ -159,8 +157,8 @@ setInterval(() => {
 
  influx.getDatabaseNames()
    .then((names) => {
-     if (!names.includes("express_response_db")) {
-       return influx.createDatabase("express_response_db");
+     if (!names.includes(databaseName)) {
+       return influx.createDatabase(databaseName);
      }
    })
    .catch((err) => {
@@ -169,21 +167,61 @@ setInterval(() => {
    
 
 
-   //start of Teachable Machine 
+   
 
-   const mobilenet = require('@tensorflow-models/mobilenet');
-   const PiCamera = require('pi-camera')
-   const myCamera = new PiCamera({mode: 'photo', output: '${__dirname}/test.jpg', width: "640", height: '480', nopreview: true,})
-   const img = document.getElementById(myCamera);
-   
-   // Load the model.
-   const model = await mobilenet.load();
-   
-   // Classify the image.
-   const predictions = await model.classify(img);
-   
-   console.log('Predictions: ');
-   console.log(predictions);
+/** 
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "./my_model/";
+
+    let model, webcam, labelContainer, maxPredictions;
+
+    // Load the image model and setup the webcam
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        // load the model and metadata
+        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+        // or files from your local hard drive
+        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // Convenience function to setup a webcam
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        // append elements to the DOM
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) { // and class labels
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    }
+
+    async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    // run the webcam image through the image model
+    async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+        }
+    }
+*/
 
 
 
