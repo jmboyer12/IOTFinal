@@ -8,7 +8,7 @@ const http = require('http');
 
 // TODO: Replace this with your Arduino's Bluetooth address
 // as found by running the 'scan on' command in bluetoothctl
-const ARDUINO_BLUETOOTH_ADDR = '3B:E9:94:0F:79:00';
+const ARDUINO_BLUETOOTH_ADDR = '67:66:24:8B:8E:00';
 
 const UART_SERVICE_UUID      = '6E400001-B5A3-F393-E0A9-E50E24DCCA9E'; 
 const TX_CHARACTERISTIC_UUID = '6E400002-B5A3-F393-E0A9-E50E24DCCA9E';
@@ -81,24 +81,22 @@ async function main(){
     })
 }
 main()
-// FOR RICK
-// this function is called everytime Dillon sends a message via UART
-// TO DO: Parsing of some sort - dependent on the data being sent
 
 const messageFromArduino = (buffer) => {
-    console.log(buffer.toString());
+    //console.log(buffer.toString());
     if(buffer[0] == 's'){
         // mess with later
     }
-    else if (buffer[0] == 'p'){
+    // check if the buffer contains the dimming_intensity 
+    else if (buffer.toString().charAt(0) == 'p'){
         const arduinoMessage = buffer.toString();
-        const messageParse = parseInt(arduinoMessage.slice(1,arduinoMessage.length-1)) 
+        const messageParse = parseInt(arduinoMessage.slice(1)) 
         console.log(messageParse);
         writeToInflux(messageParse);
     }
 }
 
-
+// function used to first verify the influx server is created and then will write to the influxdb database
 const writeToInflux = (dimming_intensity) => {
     // verify the influx server exists
     if(!influx){
@@ -131,7 +129,7 @@ const queryInflux = () => {
         console.log(err)
     })
 }
-
+// Periodically (currently set to 10 seconds) poll Arduino for light intensity and store returned value in InfluxDB
 setInterval(() => {
     // transmit to Arduino requesting light intensity :)
     if(comms.tx){
@@ -142,8 +140,6 @@ setInterval(() => {
 }, 10000);
 
 // FOR RICK
-// TO DO: Need InfluxDB and have the ability to send stuff to the InfluxDB - See Lab 4
-// Periodically poll Arduino for light intensity (DIMMER PERCENTAGE) and store returned value in InfluxDB
 
 
  const influx = new Influx.InfluxDB({
@@ -159,17 +155,13 @@ setInterval(() => {
      },
    ],
  });
-   
+
+
  influx.getDatabaseNames()
    .then((names) => {
      if (!names.includes("express_response_db")) {
        return influx.createDatabase("express_response_db");
      }
-   })
-   .then(infl =>{
-       return writeToInflux(5)
-   }).then(result =>{
-    queryInflux();
    })
    .catch((err) => {
      console.error(`Error creating Influx database!` + err);
